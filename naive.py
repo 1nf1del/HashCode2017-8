@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+from itertools import groupby
+from operator import itemgetter
+
 def parse_file(file_name):
 
     f = open(file_name)
@@ -14,7 +17,8 @@ def parse_file(file_name):
     C = int(numbers[3])
     X = int(numbers[4])
 
-    size_videos = f.readline().split() # V numbers, one for each video (size in Mb)
+    size_videos_ante = f.readline().split() # V numbers, one for each video (size in Mb)
+    size_videos = [int(size) for size in size_videos_ante]
 
     ### Parse endpoints:
 
@@ -26,10 +30,10 @@ def parse_file(file_name):
 
         cache_servers_at_endpoint_i = []
         for j in range(K):
-            CLC = f.readline().split()
-            C = int(CLC[0]) # Id (we don't care, it's just the position in the array)
-            Lc = int(CLC[1])
-            cache_servers_at_endpoint_i.append((C, Lc))
+            CidLC = f.readline().split()
+            cid = int(CidLC[0]) # Id (we don't care, it's just the position in the array)
+            Lc = int(CidLC[1])
+            cache_servers_at_endpoint_i.append((cid, Lc))
 
         endpoints.append( (Ld, K, cache_servers_at_endpoint_i) )
 
@@ -42,7 +46,6 @@ def parse_file(file_name):
         Re = int(RRR[1])
         Rn = int(RRR[2])
         requests.append((Rv, Re, Rn))
-
 
     return V, E, R, C, X, size_videos, endpoints, requests
 
@@ -60,22 +63,41 @@ def countRequest():
     for c in range(C):
         caches.append([])
     
-    print(caches)
-    
     for r in requests:
         # r[0] is video #
         # r[1] is is endpoint
         # r[2] is # of request
+        # endpoints[r[1]][2][0]  -- Latency to datacenter
+        # endpoints[r[1]][2][1]  -- # of caches
+        # endpoints[r[1]][2][2]  -- list of caches
         for c in endpoints[r[1]][2]:
             # c[0] is the cache,
             # c[1] is the latency
-            print(c[0])
-            caches[c[0]].append((r[0], c[1] * r[2]))
+            #print(c[0])
+            caches[c[0]].append((r[0], (endpoints[r[1]][0] - c[1]) * r[2]))
             
-		
-		
+    #for c in range(C):
+     #   print(len(caches[c]))
+    sortedCaches = []
     
-
-
+    for c in range(C):
+        first = itemgetter(0)
+        sums = {(k, sum(item[1] for item in tups_to_sum)) for k, tups_to_sum in groupby(sorted(caches[c], key=first), key=first)}
+        #print(sums)
+        sortedCaches.append(sorted(sums, key=lambda x: x[1], reverse=True))
+        #print()
+    
+    for c in range(C):
+        nbVideosInCache = len(sortedCaches[c])
+        cumulatedSum = 0;
+        for v in range(nbVideosInCache):
+            videoScores = sortedCaches[c][v]
+            cumulatedSum += int(size_videos[videoScores[0]])
+            if cumulatedSum <= X:
+                print(videoScores, " -> ", cumulatedSum)
+            else:
+                print(videoScores, " -> ", "Already full. Size is : ", int(size_videos[videoScores[0]]))
+        print()
+            
 if __name__ == '__main__':
     countRequest()
