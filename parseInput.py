@@ -33,7 +33,7 @@ def parse_file(file_name):
         endpoints.append( (Ld, K, cache_servers_at_endpoint_i) )
 
 
-    return V, E, R, C, X, endpoints
+    return V, E, R, C, X, size_videos, endpoints
 
 
 
@@ -41,7 +41,18 @@ if __name__ == '__main__':
 
     file_name = "Data/me_at_the_zoo.in"
 
-    V, E, R, C, X, endpoints = parse_file(file_name)
+    V, E, R, C, X, size_videos, endpoints = parse_file(file_name)
+
+    print("Nb Videos:", V)
+    print("Nb Endpoints:", E)
+    print("Nb Request Descriptions:", R)
+    print("Nb Cache Servers:", C)
+    print("Capacity of each cache servers:", X)
+    print("Size of each of the " + str(V) + " videos:", size_videos)
+
+    print("")
+
+    print("== Description of the " + str(E) + " endpoints ==")
 
     for i in range(E):
-        print '• ' + str(endpoints[i])
+        print('- ' + str(endpoints[i]))
