@@ -3,6 +3,7 @@
 
 from itertools import groupby
 from operator import itemgetter
+import sys
 
 def parse_file(file_name):
 
@@ -50,19 +51,18 @@ def parse_file(file_name):
     return V, E, R, C, X, size_videos, endpoints, requests
 
 
-def countRequest():
-    file_name = "Data/me_at_the_zoo.in"
+def countRequest(file_name):
 
     V, E, R, C, X, size_videos, endpoints, requests = parse_file(file_name)
-    
+
     #print(requests)
     #print(endpoints[requests[0][1]][2][0])
-    
+
     caches = []
-    
+
     for c in range(C):
         caches.append([])
-    
+
     for r in requests:
         # r[0] is video #
         # r[1] is is endpoint
@@ -75,32 +75,53 @@ def countRequest():
             # c[1] is the latency
             #print(c[0])
             caches[c[0]].append((r[0], (endpoints[r[1]][0] - c[1]) * r[2]))
-            
+
     #for c in range(C):
      #   print(len(caches[c]))
     sortedCaches = []
-    
+
     for c in range(C):
         first = itemgetter(0)
         sums = {(k, sum(item[1] for item in tups_to_sum)) for k, tups_to_sum in groupby(sorted(caches[c], key=first), key=first)}
         #print(sums)
         sortedCaches.append(sorted(sums, key=lambda x: x[1], reverse=True))
         #print()
-    
-    toReturn = []*C
-    
+
+    toReturn = []
+
     for c in range(C):
+
         nbVideosInCache = len(sortedCaches[c])
         cumulatedSum = 0;
+        toReturn.append([])
+
         for v in range(nbVideosInCache):
-            toReturn[c] = []
             videoScores = sortedCaches[c][v]
             cumulatedSum += int(size_videos[videoScores[0]])
-            
-            if cumulatedSum <= X:
-				toReturn[c].append(videoScores[0])
 
-	return toReturn
-        
+            if cumulatedSum <= X:
+                toReturn[c].append(videoScores[0])
+
+
+    return toReturn, C
+
 if __name__ == '__main__':
-    countRequest()
+
+    if len(sys.argv) < 2:
+        print 'Usage: python naive.py <file_name>'
+        exit(1)
+
+    file_name = sys.argv[1]
+
+    topRequests, C = countRequest(file_name)
+
+    output_file_name = file_name[:-3] + '.out'
+    output_file = open(output_file_name, 'w')
+
+    output_file.write(str(C) + '\n')
+
+    for c in range(C):
+        output_file.write(str(c) + ' ')
+        for v in topRequests[c]:
+            output_file.write(str(v) + ' ')
+        output_file.write('\n')
