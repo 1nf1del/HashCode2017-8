@@ -87,17 +87,20 @@ def countRequest():
         sortedCaches.append(sorted(sums, key=lambda x: x[1], reverse=True))
         #print()
     
+    toReturn = []*C
+    
     for c in range(C):
         nbVideosInCache = len(sortedCaches[c])
         cumulatedSum = 0;
         for v in range(nbVideosInCache):
+            toReturn[c] = []
             videoScores = sortedCaches[c][v]
             cumulatedSum += int(size_videos[videoScores[0]])
-            if cumulatedSum <= X:
-                print(videoScores, " -> ", cumulatedSum)
-            else:
-                print(videoScores, " -> ", "Already full. Size is : ", int(size_videos[videoScores[0]]))
-        print()
             
+            if cumulatedSum <= X:
+				toReturn[c].append(videoScores[0])
+
+	return toReturn
+        
 if __name__ == '__main__':
     countRequest()
