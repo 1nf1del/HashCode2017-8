@@ -11,7 +11,7 @@ def parse_file(file_name):
     V = int(numbers[0])
     E = int(numbers[1])
     R = int(numbers[2])
-    C = int(numbers[3]) + 1
+    C = int(numbers[3])
     X = int(numbers[4])
 
     size_videos = f.readline().split() # V numbers, one for each video (size in Mb)
@@ -26,10 +26,10 @@ def parse_file(file_name):
 
         cache_servers_at_endpoint_i = []
         for j in range(K):
-            CLC = f.readline().split()
-            C = int(CLC[0]) # Id (we don't care, it's just the position in the array)
-            Lc = int(CLC[1])
-            cache_servers_at_endpoint_i.append((C, Lc))
+            CidLC = f.readline().split()
+            cid = int(CidLC[0]) # Id (we don't care, it's just the position in the array)
+            Lc = int(CidLC[1])
+            cache_servers_at_endpoint_i.append((cid, Lc))
 
         endpoints.append( (Ld, K, cache_servers_at_endpoint_i) )
 
@@ -42,7 +42,6 @@ def parse_file(file_name):
         Re = int(RRR[1])
         Rn = int(RRR[2])
         requests.append((Rv, Re, Rn))
-
 
     return V, E, R, C, X, size_videos, endpoints, requests
 
