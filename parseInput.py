@@ -27,9 +27,9 @@ def parse_file(file_name):
         cache_servers_at_endpoint_i = []
         for j in range(K):
             CLC = f.readline().split()
-            C = int(CLC[0])
+            C = int(CLC[0]) # Id (we don't care, it's just the position in the array)
             Lc = int(CLC[1])
-            cache_servers_at_endpoint_i.append((C, Lc))
+            cache_servers_at_endpoint_i.append(Lc)
 
         endpoints.append( (Ld, K, cache_servers_at_endpoint_i) )
 
