@@ -14,7 +14,8 @@ def parse_file(file_name):
     C = int(numbers[3])
     X = int(numbers[4])
 
-    size_videos = f.readline().split() # V numbers, one for each video (size in Mb)
+    size_videos_ante = f.readline().split() # V numbers, one for each video (size in Mb)
+    size_videos = [int(size) for size in size_videos_ante]
 
     ### Parse endpoints:
 
