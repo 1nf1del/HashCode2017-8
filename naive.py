@@ -108,7 +108,7 @@ def countRequest(file_name):
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print 'Usage: python naive.py <file_name>'
+        print('Usage: python naive.py <file_name>')
         exit(1)
 
     file_name = sys.argv[1]
